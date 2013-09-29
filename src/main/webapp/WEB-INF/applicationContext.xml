@@ -37,7 +37,7 @@
           destroy-method="close">
         <property name="user" value="${jdbc.username}" />
         <property name="password" value="${jdbc.password}" />
-        <property name="driverClass" value="com.mysql.jdbc.Driver" />
+        <property name="driverClass" value="${jdbc.driverClassName}" />
         <property name="jdbcUrl" value="${jdbc.url}" />
         <property name="initialPoolSize">
             <value>10</value>
@@ -59,10 +59,36 @@
         </property>
     </bean>
 
-    <bean id="transactionManager"
-          class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean" >
+        <property name="dataSource" ref="dataSource">
+        </property>
+        <property name="mappingLocations">
+            <bean class="com.springapp.spring.HbmMappingFactory">
+                <constructor-arg index="0">
+                    <value>org.springframework.core.io.ClassPathResource</value>
+                </constructor-arg>
+            </bean>
+        </property>
+
+        <property name="hibernateProperties">
+            <bean class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+                <property name="location">
+                    <value>/WEB-INF/hibernate.properties</value>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
+    <!--<bean id="hibernateDao" class="cn.haros.framework.dao.impl.DefaultHibernateDao">-->
+        <!--<property name="sessionFactory">-->
+            <!--<ref bean="sessionFactory"/>-->
+        <!--</property>-->
+    <!--</bean>-->
+
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="dataSource" />
     </bean>
+
 
     <tx:annotation-driven/>
 
